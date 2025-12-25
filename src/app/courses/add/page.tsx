@@ -1,58 +1,36 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Card, Typography, Button, message } from 'antd';
+import { Card, Button, Typography, message } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { CourseForm } from '@/components/CourseForm';
 import { courseAPI } from '@/services/api';
+import { useState } from 'react';
 
-const { Title } = Typography;
-
-function AddCoursePage() {
-  const [loading, setLoading] = useState(false);
+export default function AddCoursePage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (values: any) => {
+  const submit = async (v: any) => {
     setLoading(true);
-    try {
-      await courseAPI.create(values);
-      message.success('Course created successfully!');
-      router.push('/courses');
-    } catch (error) {
-      message.error('Failed to create course');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    await courseAPI.create(v);
+    message.success('Course created!');
+    router.push('/courses');
+    setLoading(false);
   };
 
   return (
-    <div className="container">
+    <ProtectedRoute>
       <Card>
-        <Button
-          icon={<ArrowLeftOutlined />}
-          onClick={() => router.back()}
-          style={{ marginBottom: 16 }}
-        >
+        <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
           Back
         </Button>
-        
-        <Title level={2}>Add New Course</Title>
-        
-        <div style={{ maxWidth: 600, margin: '0 auto' }}>
-          <CourseForm onSubmit={handleSubmit} loading={loading} />
-        </div>
-      </Card>
-    </div>
-  );
-}
 
-export default function AddCoursePageWrapper() {
-  return (
-    <ProtectedRoute>
-      <AddCoursePage />
+        <Typography.Title level={3}>Add Course</Typography.Title>
+
+        <CourseForm onSubmit={submit} loading={loading} />
+      </Card>
     </ProtectedRoute>
   );
 }

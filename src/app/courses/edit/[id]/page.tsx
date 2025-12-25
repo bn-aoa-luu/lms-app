@@ -11,10 +11,11 @@ import { Course } from '@/types/course';
 
 const { Title } = Typography;
 
-function EditCoursePage() {
+const EditCoursePage = () => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [course, setCourse] = useState<Course | null>(null);
+
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
@@ -26,15 +27,12 @@ function EditCoursePage() {
         setCourse(data);
       } catch (error) {
         message.error('Failed to fetch course');
-        console.error(error);
       } finally {
         setFetching(false);
       }
     };
 
-    if (id) {
-      fetchCourse();
-    }
+    if (id) fetchCourse();
   }, [id]);
 
   const handleSubmit = async (values: any) => {
@@ -43,9 +41,8 @@ function EditCoursePage() {
       await courseAPI.update(id, values);
       message.success('Course updated successfully!');
       router.push('/courses');
-    } catch (error) {
+    } catch {
       message.error('Failed to update course');
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -53,7 +50,7 @@ function EditCoursePage() {
 
   if (fetching) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div className="flex justify-center items-center h-screen">
         <Spin size="large" />
       </div>
     );
@@ -61,7 +58,7 @@ function EditCoursePage() {
 
   if (!course) {
     return (
-      <div className="container">
+      <div className="container mx-auto p-4">
         <Card>
           <Title level={3}>Course not found</Title>
           <Button onClick={() => router.push('/courses')}>Back to Courses</Button>
@@ -71,19 +68,19 @@ function EditCoursePage() {
   }
 
   return (
-    <div className="container">
+    <div className="container mx-auto p-4">
       <Card>
         <Button
           icon={<ArrowLeftOutlined />}
           onClick={() => router.back()}
-          style={{ marginBottom: 16 }}
+          className="mb-4"
         >
           Back
         </Button>
-        
+
         <Title level={2}>Edit Course</Title>
-        
-        <div style={{ maxWidth: 600, margin: '0 auto' }}>
+
+        <div className="max-w-xl mx-auto">
           <CourseForm 
             initialValues={course} 
             onSubmit={handleSubmit} 
@@ -93,7 +90,7 @@ function EditCoursePage() {
       </Card>
     </div>
   );
-}
+};
 
 export default function EditCoursePageWrapper() {
   return (

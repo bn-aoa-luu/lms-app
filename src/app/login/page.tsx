@@ -1,95 +1,61 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Form, Input, Button, Card, Typography } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from "react";
+import { Card, Form, Input, Button, Typography } from "antd";
+import { useAuth } from "@/contexts/AuthContext";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 export default function LoginPage() {
-  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
-  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
 
   const onFinish = async (values: any) => {
-    setLoading(true);
     try {
+      setLoading(true);
       await login(values);
-    } catch (error) {
-      console.error('Login failed:', error);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-    }}>
-      <Card style={{ width: 400, boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <Title level={2}>LMS Login</Title>
-          <Text type="secondary">Welcome back! Please login to continue.</Text>
-        </div>
+    <div className="flex justify-center items-center h-screen">
+      <Card style={{ width: 380 }}>
+        <Title level={3} style={{ textAlign: "center" }}>
+          Login
+        </Title>
 
-        <Form
-          form={form}
-          name="login"
-          onFinish={onFinish}
-          autoComplete="off"
-          layout="vertical"
-        >
+        <Form layout="vertical" onFinish={onFinish}>
           <Form.Item
+            label="Email"
             name="email"
             rules={[
-              { required: true, message: 'Please input your email!' },
-              { type: 'email', message: 'Please enter a valid email!' }
+              { required: true, message: "Please input your email!" },
+              { type: "email", message: "Invalid email format!" },
             ]}
           >
-            <Input 
-              prefix={<UserOutlined />} 
-              placeholder="Email" 
-              size="large"
-            />
+            <Input placeholder="email@example.com" />
           </Form.Item>
 
           <Form.Item
+            label="Password"
             name="password"
-            rules={[
-              { required: true, message: 'Please input your password!' },
-              { min: 6, message: 'Password must be at least 6 characters!' }
-            ]}
+            rules={[{ required: true, message: "Please input your password!" }]}
           >
-            <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="Password"
-              size="large"
-            />
+            <Input.Password placeholder="******" />
           </Form.Item>
 
-          <Form.Item>
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              block 
-              size="large"
-              loading={loading}
-            >
-              Login
-            </Button>
-          </Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+            block
+            style={{ marginTop: 10 }}
+          >
+            Login
+          </Button>
         </Form>
-
-        <div style={{ marginTop: 16, textAlign: 'center' }}>
-          <Text type="secondary" style={{ fontSize: '12px' }}>
-            Demo: admin@example.com / password
-          </Text>
-        </div>
       </Card>
     </div>
   );

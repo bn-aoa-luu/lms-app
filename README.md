@@ -25,8 +25,7 @@ A Learning Management System (LMS) built with Next.js, TypeScript, and Ant Desig
 ## Installation
 
 1. Clone the repository
-
-git clone https://github.com/bn-aoa-luu/lms-app/tree/main
+git clone https://github.com/bn-aoa-luu/lms-app.git
 cd lms-app
 
 2. Install dependencies
