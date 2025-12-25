@@ -1,101 +1,94 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Card, Typography, Button, message, Spin } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useRouter, useParams } from 'next/navigation';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { CourseForm } from '@/components/CourseForm';
-import { courseAPI } from '@/services/api';
-import { Course } from '@/types/course';
-
-const { Title } = Typography;
+import { useEffect, useState } from "react";
+import { Card, Form, Input, Button, Select, message, Spin } from "antd";
+import { useParams, useRouter } from "next/navigation";
+import { CATEGORIES, LEVELS } from "@/constants";
+import { courseApi } from "@/services/api";
 
 const EditCoursePage = () => {
-  const [loading, setLoading] = useState(false);
-  const [fetching, setFetching] = useState(true);
-  const [course, setCourse] = useState<Course | null>(null);
-
-  const router = useRouter();
   const params = useParams();
   const id = params.id as string;
+  const router = useRouter();
+
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const data = await courseAPI.getById(id);
-        setCourse(data);
-      } catch (error) {
-        message.error('Failed to fetch course');
+        const data = await courseApi.getById(id);
+        form.setFieldsValue(data);
+      } catch {
+        message.error("Failed to load course");
       } finally {
-        setFetching(false);
+        setLoading(false);
       }
     };
 
-    if (id) fetchCourse();
-  }, [id]);
+    fetchCourse();
+  }, [id, form]);
 
-  const handleSubmit = async (values: any) => {
-    setLoading(true);
+  const onFinish = async (values: any) => {
     try {
-      await courseAPI.update(id, values);
-      message.success('Course updated successfully!');
-      router.push('/courses');
+      await courseApi.update(id, values);
+      message.success("Course updated successfully");
+      router.push("/courses");
     } catch {
-      message.error('Failed to update course');
-    } finally {
-      setLoading(false);
+      message.error("Update failed");
     }
   };
 
-  if (fetching) {
+  if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="h-screen flex items-center justify-center">
         <Spin size="large" />
       </div>
     );
   }
 
-  if (!course) {
-    return (
-      <div className="container mx-auto p-4">
-        <Card>
-          <Title level={3}>Course not found</Title>
-          <Button onClick={() => router.push('/courses')}>Back to Courses</Button>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto p-4">
-      <Card>
-        <Button
-          icon={<ArrowLeftOutlined />}
-          onClick={() => router.back()}
-          className="mb-4"
-        >
-          Back
-        </Button>
+    <div className="p-6 flex justify-center">
+      <Card title="Edit Course" className="w-full max-w-xl">
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+          <Form.Item label="Title" name="title" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
 
-        <Title level={2}>Edit Course</Title>
+          <Form.Item label="Category" name="category" rules={[{ required: true }]}>
+            <Select options={CATEGORIES} />
+          </Form.Item>
 
-        <div className="max-w-xl mx-auto">
-          <CourseForm 
-            initialValues={course} 
-            onSubmit={handleSubmit} 
-            loading={loading} 
-          />
-        </div>
+          <Form.Item label="Level" name="level" rules={[{ required: true }]}>
+            <Select options={LEVELS} />
+          </Form.Item>
+
+          <Form.Item
+            label="Number of Lessons"
+            name="numberOfLesson"
+            rules={[{ required: true }]}
+          >
+            <Input type="number" min={1} />
+          </Form.Item>
+
+          <Form.Item label="Description" name="description">
+            <Input.TextArea rows={4} />
+          </Form.Item>
+
+          <Form.Item label="Thumbnail URL" name="thumbnail" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+
+          <div className="flex justify-end gap-2">
+            <Button onClick={() => router.back()}>Cancel</Button>
+            <Button type="primary" htmlType="submit">
+              Update
+            </Button>
+          </div>
+        </Form>
       </Card>
     </div>
   );
 };
 
-export default function EditCoursePageWrapper() {
-  return (
-    <ProtectedRoute>
-      <EditCoursePage />
-    </ProtectedRoute>
-  );
-}
+export default EditCoursePage;

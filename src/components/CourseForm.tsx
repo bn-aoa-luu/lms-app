@@ -1,63 +1,83 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Form, Input, Button, Select } from 'antd';
-import { Course } from '@/types/course';
+import { Form, Input, Button, Select, Card } from "antd";
+import { Course } from "@/types/course";
+import {
+  LEVELS,
+  CATEGORIES,
+} from "@/constants/index";
 
-export const CourseForm = ({
+interface Props {
+  initialValues?: Course;
+  onSubmit: (values: Course) => Promise<void>;
+  loading?: boolean;
+}
+
+const CourseForm = ({
   initialValues,
   onSubmit,
   loading,
-}: {
-  initialValues?: Partial<Course>;
-  onSubmit: (v: any) => void;
-  loading: boolean;
-}) => {
+}: Props) => {
   const [form] = Form.useForm();
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      initialValues={initialValues}
-      onFinish={onSubmit}
-    >
-      <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-        <Input />
-      </Form.Item>
+    <Card title="Course Form" style={{ maxWidth: 600 }}>
+      <Form
+        layout="vertical"
+        form={form}
+        initialValues={initialValues}
+        onFinish={onSubmit}
+      >
+        <Form.Item
+          label="Title"
+          name="title"
+          rules={[{ required: true, message: "Title is required" }]}
+        >
+          <Input />
+        </Form.Item>
 
-      <Form.Item name="description" label="Description" rules={[{ required: true }]}>
-        <Input.TextArea rows={3} />
-      </Form.Item>
+        <Form.Item
+          label="Category"
+          name="category"
+          rules={[{ required: true }]}
+        >
+          <Select options={CATEGORIES} />
+        </Form.Item>
 
-      <Form.Item name="category" label="Category" rules={[{ required: true }]}>
-        <Select
-          options={[
-            { value: '4SKILLS' },
-            { value: 'GRAMMAR' },
-            { value: 'VOCABULARY' },
-          ]}
-        />
-      </Form.Item>
+        <Form.Item
+          label="Level"
+          name="level"
+          rules={[{ required: true }]}
+        >
+          <Select options={LEVELS} />
+        </Form.Item>
 
-      <Form.Item name="level" label="Level" rules={[{ required: true }]}>
-        <Select
-          options={[
-            { value: 'Beginner' },
-            { value: 'Elementary' },
-            { value: 'Intermediate' },
-            { value: 'Advanced' },
-          ]}
-        />
-      </Form.Item>
+        <Form.Item
+          label="Description"
+          name="description"
+        >
+          <Input.TextArea rows={4} />
+        </Form.Item>
 
-      <Form.Item name="thumbnail" label="Thumbnail URL" rules={[{ required: true }]}>
-        <Input />
-      </Form.Item>
+        <Form.Item
+          label="Thumbnail URL"
+          name="thumbnail"
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
 
-      <Button type="primary" htmlType="submit" loading={loading} block>
-        Save
-      </Button>
-    </Form>
+        <Button
+          type="primary"
+          htmlType="submit"
+          loading={loading}
+          block
+        >
+          Submit
+        </Button>
+      </Form>
+    </Card>
   );
 };
+
+export default CourseForm;

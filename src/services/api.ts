@@ -1,51 +1,54 @@
-import axios from 'axios';
-import { Course, LoginCredentials } from '@/types/course';
+// src/services/courseApi.ts
 
-const BASE_URL = 'https://6938e7e24618a71d77d19513.mockapi.io/api/v1/course';
+const STORAGE_KEY = "courses";
 
-export const courseAPI = {
-  getAll: async (params?: any) => {
-    const res = await axios.get<Course[]>(BASE_URL, { params });
-    return res.data;
-  },
-
-  getById: async (id: string) => {
-    const res = await axios.get<Course>(`${BASE_URL}/${id}`);
-    return res.data;
-  },
-
-  create: async (data: Omit<Course, 'id'>) => {
-    const res = await axios.post<Course>(BASE_URL, data);
-    return res.data;
-  },
-
-  update: async (id: string, data: Partial<Course>) => {
-    const res = await axios.put<Course>(`${BASE_URL}/${id}`, data);
-    return res.data;
-  },
-
-  delete: async (id: string) => {
-    const res = await axios.delete(`${BASE_URL}/${id}`);
-    return res.data;
-  },
+// helper
+const getAll = () => {
+  if (typeof window === "undefined") return [];
+  return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 };
 
-export const authAPI = {
-  login: async (
-    credentials: LoginCredentials
-  ): Promise<{ token: string; user: any }> => {
-    await new Promise((r) => setTimeout(r, 800));
+const saveAll = (data: any[]) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+};
 
-    const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const courseApi = {
+  getAll: async () => {
+    return getAll();
+  },
 
-    if (validEmail.test(credentials.email) && credentials.password.length >= 6) {
-      return {
-        token: 'fake-jwt-' + Date.now(),
-        user: {
-          email: credentials.email,
-        },
-      };
-    }
-    throw new Error('Invalid email or password');
+  getById: async (id: string | number) => {
+    const courses = getAll();
+    const course = courses.find((c: any) => String(c.id) === String(id));
+    if (!course) throw new Error("Course not found");
+    return course;
+  },
+
+  create: async (data: any) => {
+    const courses = getAll();
+    const newCourse = {
+      id: Date.now(), // tạo id
+      ...data,
+    };
+    saveAll([...courses, newCourse]);
+    return newCourse;
+  },
+
+  update: async (id: string | number, data: any) => {
+    const courses = getAll();
+    const updated = courses.map((c: any) =>
+      String(c.id) === String(id) ? { ...c, ...data } : c
+    );
+    saveAll(updated);
+    return true;
+  },
+
+  delete: async (id: string | number) => {
+    const courses = getAll();
+    const filtered = courses.filter(
+      (c: any) => String(c.id) !== String(id)
+    );
+    saveAll(filtered);
+    return true;
   },
 };

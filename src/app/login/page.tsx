@@ -1,58 +1,45 @@
 "use client";
 
-import { useState } from "react";
-import { Card, Form, Input, Button, Typography } from "antd";
+import { Card, Form, Input, Button } from "antd";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-
-const { Title } = Typography;
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const [loading, setLoading] = useState(false);
-
-  const onFinish = async (values: any) => {
-    try {
-      setLoading(true);
-      await login(values);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const router = useRouter();
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <Card style={{ width: 380 }}>
-        <Title level={3} style={{ textAlign: "center" }}>
-          Login
-        </Title>
-
-        <Form layout="vertical" onFinish={onFinish}>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "#f5f5f5",
+      }}
+    >
+      <Card title="Login" style={{ width: 360 }}>
+        <Form
+          layout="vertical"
+          onFinish={login}
+        >
           <Form.Item
             label="Email"
             name="email"
-            rules={[
-              { required: true, message: "Please input your email!" },
-              { type: "email", message: "Invalid email format!" },
-            ]}
+            rules={[{ required: true }]}
           >
-            <Input placeholder="email@example.com" />
+            <Input />
           </Form.Item>
 
           <Form.Item
             label="Password"
             name="password"
-            rules={[{ required: true, message: "Please input your password!" }]}
+            rules={[{ required: true }]}
           >
-            <Input.Password placeholder="******" />
+            <Input.Password />
           </Form.Item>
 
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={loading}
-            block
-            style={{ marginTop: 10 }}
-          >
+          <Button type="primary" htmlType="submit" block>
             Login
           </Button>
         </Form>

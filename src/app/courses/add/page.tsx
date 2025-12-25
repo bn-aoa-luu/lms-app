@@ -1,36 +1,88 @@
-'use client';
+"use client";
 
-import { Card, Button, Typography, message } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/navigation';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { CourseForm } from '@/components/CourseForm';
-import { courseAPI } from '@/services/api';
-import { useState } from 'react';
+import { Card, Form, Input, Button, Select, message } from "antd";
+import { useRouter } from "next/navigation";
+import { CATEGORIES, LEVELS } from "@/constants";
+import { courseApi } from "@/services/api";
 
-export default function AddCoursePage() {
+const AddCoursePage = () => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
 
-  const submit = async (v: any) => {
-    setLoading(true);
-    await courseAPI.create(v);
-    message.success('Course created!');
-    router.push('/courses');
-    setLoading(false);
+  // ✅ POST /course
+  const onFinish = async (values: any) => {
+    try {
+      await courseApi.create(values); 
+      message.success("Course added successfully");
+      router.push("/courses");
+    } catch (error) {
+      message.error("Add course failed");
+    }
   };
 
   return (
-    <ProtectedRoute>
-      <Card>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
-          Back
-        </Button>
+    <div className="p-6 flex justify-center">
+      <Card title="Add New Course" className="w-full max-w-xl">
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          initialValues={{ numberOfLesson: 1 }}
+        >
+          <Form.Item
+            label="Title"
+            name="title"
+            rules={[{ required: true, message: "Title is required" }]}
+          >
+            <Input />
+          </Form.Item>
 
-        <Typography.Title level={3}>Add Course</Typography.Title>
+          <Form.Item
+            label="Category"
+            name="category"
+            rules={[{ required: true }]}
+          >
+            <Select options={CATEGORIES} />
+          </Form.Item>
 
-        <CourseForm onSubmit={submit} loading={loading} />
+          <Form.Item
+            label="Level"
+            name="level"
+            rules={[{ required: true }]}
+          >
+            <Select options={LEVELS} />
+          </Form.Item>
+
+          <Form.Item
+            label="Number of Lessons"
+            name="numberOfLesson"
+            rules={[{ required: true }]}
+          >
+            <Input type="number" min={1} />
+          </Form.Item>
+
+          <Form.Item label="Description" name="description">
+            <Input.TextArea rows={4} />
+          </Form.Item>
+
+          <Form.Item
+            label="Thumbnail URL"
+            name="thumbnail"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <div className="flex justify-end gap-2">
+            <Button onClick={() => router.back()}>Cancel</Button>
+            <Button type="primary" htmlType="submit">
+              Create
+            </Button>
+          </div>
+        </Form>
       </Card>
-    </ProtectedRoute>
+    </div>
   );
-}
+};
+
+export default AddCoursePage;

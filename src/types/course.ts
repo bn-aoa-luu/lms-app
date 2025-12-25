@@ -1,9 +1,10 @@
 export interface Course {
-  id: string;
+  id: string | number;
   title: string;
-  description: string;
   category: string;
+  numberOfLesson: number;
   level: string;
+  description: string;
   thumbnail: string;
 }
 
@@ -14,7 +15,7 @@ export interface LoginCredentials {
 
 export interface AuthContextType {
   isAuthenticated: boolean;
-  login: (cred: LoginCredentials) => Promise<void>;
-  logout: () => void;
   loading: boolean;
+  login: (data: LoginCredentials) => Promise<void>;
+  logout: () => void;
 }

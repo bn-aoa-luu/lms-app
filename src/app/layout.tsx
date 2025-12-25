@@ -1,12 +1,6 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { AuthProvider } from "@/contexts/AuthContext";
-
-export const metadata: Metadata = {
-  title: "LMS App",
-  description: "Intern Test LMS Application"
-};
+import "antd/dist/reset.css";
+import "./globals.css";
 
 export default function RootLayout({
   children,
@@ -16,9 +10,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AntdRegistry>
-          <AuthProvider>{children}</AuthProvider>
-        </AntdRegistry>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

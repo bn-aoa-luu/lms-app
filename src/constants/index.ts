@@ -1,9 +1,13 @@
-export const DEFAULT_PAGE = 1;
-export const DEFAULT_LIMIT = 10;
+export const PAGE_SIZE = 10;
 
-export const LEVELS = ["Beginner", "Intermediate", "Advanced"];
+export const CATEGORIES = [
+  { label: "4 Skills", value: "4SKILLS" },
+  { label: "Grammar", value: "GRAMMAR" },
+  { label: "Vocabulary", value: "VOCAB" },
+];
 
-export const FORM_MESSAGE = {
-  REQUIRED: "This field is required",
-  EMAIL_INVALID: "Invalid email format",
-};
+export const LEVELS = [
+  { label: "Beginner", value: "BEGINNER" },
+  { label: "Intermediate", value: "INTERMEDIATE" },
+  { label: "Advanced", value: "ADVANCED" },
+];

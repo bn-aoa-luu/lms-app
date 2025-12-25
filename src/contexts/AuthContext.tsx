@@ -1,17 +1,19 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { message } from "antd";
-import { authAPI } from "@/services/api";
-import { AuthContextType, LoginCredentials } from "@/types/course";
+import { createContext, useContext, useEffect, useState } from "react";
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+interface AuthContextType {
+  isAuthenticated: boolean;
+  loading: boolean;
+  login: () => void;
+  logout: () => void;
+}
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -19,21 +21,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   }, []);
 
-  const login = async (credentials: LoginCredentials) => {
-    const response = await authAPI.login(credentials);
-
-    localStorage.setItem("authToken", response.token);
+  const login = () => {
+    localStorage.setItem("authToken", "demo-token");
     setIsAuthenticated(true);
-    message.success("Login successful!");
-
-    router.push("/courses");
   };
 
   const logout = () => {
     localStorage.removeItem("authToken");
     setIsAuthenticated(false);
-    message.info("Logged out");
-    router.push("/login");
   };
 
   return (
@@ -44,10 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+  return ctx;
 };
-  
